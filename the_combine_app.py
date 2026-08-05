@@ -6,6 +6,9 @@ client = genai.Client(
     api_key = st.secrets["GEMINI_API_KEY"]
 )
 
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
 # Custom CSS 
 st.markdown("""
 <style>
@@ -234,6 +237,10 @@ with col_left:
 with col_mid:
     st.header("The Combine Harvester")
 
+    for message in st.session_state.messages:
+        with st.chat_message(message['role']):
+            st.markdown(message['content'])
+
     question = st.chat_input(
         "Ask a question about the proposals in the database..."
     )
@@ -265,4 +272,10 @@ with col_mid:
 
         answer = response.text
 
-        st.write(answer)
+        st.session_state.messages.append(
+            {"role": "assistant",
+            "content" : answer}
+        )
+
+        with st.chat_message("assistant"):
+            st.markdown(answer)
