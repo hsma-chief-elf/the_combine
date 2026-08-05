@@ -1,6 +1,22 @@
 import streamlit as st
 from supabase import create_client, Client
 
+# Custom CSS 
+st.markdown("""
+<style>
+div[data-testid="stExpander"] summary,
+div[data-testid="stExpander"] summary * {
+    background-color: blue !important;
+    color: white !important;
+}
+
+div[data-testid="stExpander"] details > div {
+    background-color: white !important;
+    color: black !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # Use wide layout
 st.set_page_config(
     layout="wide",
@@ -24,37 +40,64 @@ def run_query_main_table():
 st.title("Welcome to The Combine - the hub for HSMA Lambda Project Proposals")
 
 # Set up main sections of the app
-col_left, col_right = st.columns([0.5,0.5])
+col_left, col_mid, col_right = st.columns([0.25,0.25,0.5])
 
 # Grab contents of main the_combine table from Supabase DB
 rows_main = run_query_main_table()
 
-# Left section
+# Inactive proposals section
 with col_left:
     with st.container(height=600):
         for i in range(len(rows_main.data)-1,-1,-1):
-            headline = (
-                f"**[{rows_main.data[i]['proposal_id']}]  " +
-                f"{rows_main.data[i]['proposal_title']}**" +
-                "\n\n" +
-                "Proposed by : "
-                f"*{rows_main.data[i]['proposer_name']} (" +
-                f"{rows_main.data[i]['proposer_role']}, " +
-                f"{rows_main.data[i]['proposer_org']})*" +
-                "\n\n" +
-                f"Tag: {rows_main.data[i]['area_tag']} " +
-                f"(Submitted: {rows_main.data[i]['submission_month']} " +
-                f"{rows_main.data[i]['submission_year']})" +
-                "\n\n" +
-                f"Status : {rows_main.data[i]['status']}"
-            )
-
-            with st.expander(headline):
-                st.write(
-                    rows_main.data[i]['proposal_desc'] +
+            if rows_main.data[i]['status'] == "inactive":
+                headline = (
+                    f"**[{rows_main.data[i]['proposal_id']}]  " +
+                    f"{rows_main.data[i]['proposal_title']}**" +
                     "\n\n" +
-                    "**Collaborators:**" +
+                    "Proposed by : "
+                    f"*{rows_main.data[i]['proposer_name']} (" +
+                    f"{rows_main.data[i]['proposer_role']}, " +
+                    f"{rows_main.data[i]['proposer_org']})*" +
                     "\n\n" +
-                    rows_main.data[i]['collaborators']
+                    f"Tag: {rows_main.data[i]['area_tag']} " +
+                    f"(Submitted: {rows_main.data[i]['submission_month']} " +
+                    f"{rows_main.data[i]['submission_year']})"
                 )
+
+                with st.expander(headline):
+                    st.write(
+                        rows_main.data[i]['proposal_desc'] +
+                        "\n\n" +
+                        "**Collaborators:**" +
+                        "\n\n" +
+                        rows_main.data[i]['collaborators']
+                    )
+
+# Active proposals section
+with col_mid:
+    with st.container(height=600):
+        for i in range(len(rows_main.data)-1,-1,-1):
+            if rows_main.data[i]['status'] == "active":
+                headline = (
+                    f"**[{rows_main.data[i]['proposal_id']}]  " +
+                    f"{rows_main.data[i]['proposal_title']}**" +
+                    "\n\n" +
+                    "Proposed by : "
+                    f"*{rows_main.data[i]['proposer_name']} (" +
+                    f"{rows_main.data[i]['proposer_role']}, " +
+                    f"{rows_main.data[i]['proposer_org']})*" +
+                    "\n\n" +
+                    f"Tag: {rows_main.data[i]['area_tag']} " +
+                    f"(Submitted: {rows_main.data[i]['submission_month']} " +
+                    f"{rows_main.data[i]['submission_year']})"
+                )
+
+                with st.expander(headline):
+                    st.write(
+                        rows_main.data[i]['proposal_desc'] +
+                        "\n\n" +
+                        "**Collaborators:**" +
+                        "\n\n" +
+                        rows_main.data[i]['collaborators']
+                    )
 
