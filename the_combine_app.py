@@ -251,6 +251,18 @@ with col_mid:
         )
         st.write("Thinking...")
 
+        st.session_state.messages.append(
+            {
+                "role": "user",
+                "content": question
+            }
+        )
+
+        conversation = ""
+
+        for message in st.session_state.messages:
+            conversation += f"{message['role']}: {message['content']}\n"
+
         response = client.models.generate_content(
             model="gemini-3.6-flash",
             contents=f"""
@@ -265,17 +277,22 @@ with col_mid:
             Here are the project proposals :
             {proposal_context}
 
-            Here's the question :
-            {question}
+            And here's the conversation so far :
+            {conversation}
+
+            Please answer the user's latest question.
             """
         )
 
         answer = response.text
 
         st.session_state.messages.append(
-            {"role": "assistant",
-            "content" : answer}
+            {
+                "role": "assistant",
+                "content" : answer
+            }
         )
 
         with st.chat_message("assistant"):
             st.markdown(answer)
+
