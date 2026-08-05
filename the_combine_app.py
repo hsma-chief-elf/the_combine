@@ -77,7 +77,10 @@ def run_query_main_table():
     return supabase.table("lambda_proposals").select("*").execute()
 
 # Title for app
-st.title("Welcome to The Combine - the hub for HSMA Lambda Project Proposals")
+st.title("The Combine")
+st.write(
+    "Welcome to The Combine - the hub for HSMA Lambda Project Proposals."
+)
 
 # Set up main sections of the app
 col_left, col_right = st.columns([0.5,0.5])
