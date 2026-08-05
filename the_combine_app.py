@@ -237,20 +237,16 @@ with col_left:
 with col_mid:
     st.header("The Combine Harvester")
 
-    for message in st.session_state.messages:
-        with st.chat_message(message['role']):
-            st.markdown(message['content'])
+    with st.container(height=500):
+        for message in st.session_state.messages:
+            with st.chat_message(message['role']):
+                st.markdown(message['content'])
 
     question = st.chat_input(
         "Ask a question about the proposals in the database..."
     )
 
     if question:
-        st.write(
-            f"You asked {question}"
-        )
-        st.write("Thinking...")
-
         st.session_state.messages.append(
             {
                 "role": "user",
@@ -263,26 +259,27 @@ with col_mid:
         for message in st.session_state.messages:
             conversation += f"{message['role']}: {message['content']}\n"
 
-        response = client.models.generate_content(
-            model="gemini-3.6-flash",
-            contents=f"""
-            You are an assistant helping senior NHS leaders find
-            information about HSMA Lambda project proposals that have
-            been previously submitted (some of which will have turned
-            into active or even completed projects).
+        with st.spinner("Thinking..."):
+            response = client.models.generate_content(
+                model="gemini-3.6-flash",
+                contents=f"""
+                You are an assistant helping senior NHS leaders find
+                information about HSMA Lambda project proposals that have
+                been previously submitted (some of which will have turned
+                into active or even completed projects).
 
-            Only answer using the proposal information provided.  If
-            there are no matching proposals, say so.
+                Only answer using the proposal information provided.  If
+                there are no matching proposals, say so.
 
-            Here are the project proposals :
-            {proposal_context}
+                Here are the project proposals :
+                {proposal_context}
 
-            And here's the conversation so far :
-            {conversation}
+                And here's the conversation so far :
+                {conversation}
 
-            Please answer the user's latest question.
-            """
-        )
+                Please answer the user's latest question.
+                """
+            )
 
         answer = response.text
 
@@ -293,6 +290,5 @@ with col_mid:
             }
         )
 
-        with st.chat_message("assistant"):
-            st.markdown(answer)
+        st.rerun()
 
