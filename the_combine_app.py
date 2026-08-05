@@ -16,9 +16,9 @@ def init_connection():
 # Create Supabase DB connection
 supabase = init_connection()
 
-# Function to grab everything in the Supabase table the_combine
+# Function to grab everything in the Supabase table lambda_proposals
 def run_query_main_table():
-    return supabase.table("the_combine").select("*").execute()
+    return supabase.table("lambda_proposals").select("*").execute()
 
 # Title for app
 st.title("Welcome to The Combine - the hub for HSMA Lambda Project Proposals")
