@@ -4,15 +4,38 @@ from supabase import create_client, Client
 # Custom CSS 
 st.markdown("""
 <style>
-div[data-testid="stExpander"] summary,
-div[data-testid="stExpander"] summary * {
-    background-color: blue !important;
-    color: white !important;
+.st-key-inactive_proposals div[data-testid="stExpander"] summary {
+    background-color: #340a95;
+    color: #fdfdfd;
 }
 
-div[data-testid="stExpander"] details > div {
-    background-color: white !important;
-    color: black !important;
+.st-key-inactive_proposals div[data-testid="stExpander"] details > div {
+    background-color: white;
+    color: black
+}
+
+.st-key-active_proposals div[data-testid="stExpander"] summary {
+    background-color: #0da64d;
+    color: #fdfdfd;
+}
+
+.st-key-active_proposals div[data-testid="stExpander"] details > div {
+    background-color: white;
+    color: black
+}
+
+.st-key-inactive_proposals {
+    background-color: #350053;
+    border: 1px solid #f5f9fc;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.st-key-active_proposals {
+    background-color: #004501;
+    border: 1px solid #f5f9fc;
+    border-radius: 10px;
+    padding: 10px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -47,7 +70,7 @@ rows_main = run_query_main_table()
 
 # Inactive proposals section
 with col_left:
-    with st.container(height=600):
+    with st.container(height=600, key="inactive_proposals"):
         for i in range(len(rows_main.data)-1,-1,-1):
             if rows_main.data[i]['status'] == "inactive":
                 headline = (
@@ -75,7 +98,7 @@ with col_left:
 
 # Active proposals section
 with col_mid:
-    with st.container(height=600):
+    with st.container(height=600, key="active_proposals"):
         for i in range(len(rows_main.data)-1,-1,-1):
             if rows_main.data[i]['status'] == "active":
                 headline = (
