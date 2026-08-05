@@ -1,5 +1,10 @@
 import streamlit as st
 from supabase import create_client, Client
+from google import genai
+
+client = genai.Client(
+    api_key = st.secrets["GEMINI_API_KEY"]
+)
 
 # Custom CSS 
 st.markdown("""
@@ -76,6 +81,25 @@ supabase = init_connection()
 def run_query_main_table():
     return supabase.table("lambda_proposals").select("*").execute()
 
+# Function to load all of the proposal information across the database into a
+# single text block, for use as context for LLM
+def create_proposal_context(rows):
+    context = ""
+
+    for row in rows.data:
+        context += f"""
+        Proposal ID: {row['proposal_id']}
+        Title: {row['proposal_title']}
+        Organisation: {row['proposer_org']}
+        Proposer: {row['proposer_name']}
+        Tag: {row['area_tag']}
+        Description:
+        {row['proposal_desc']}
+        ---
+        """
+
+    return context
+
 # Title for app
 st.title("The Combine")
 st.write(
@@ -83,10 +107,12 @@ st.write(
 )
 
 # Set up main sections of the app
-col_left, col_right = st.columns([0.5,0.5])
+col_left, col_mid, col_right = st.columns([0.25,0.25,0.5])
 
 # Grab contents of main the_combine table from Supabase DB
 rows_main = run_query_main_table()
+
+proposal_context = create_proposal_context(rows_main)
 
 # Proposals information section
 with col_left:
@@ -204,3 +230,39 @@ with col_left:
                             rows_main.data[i]['collaborators']
                         )
 
+# LLM Chatbot section
+with col_mid:
+    st.header("The Combine Harvester")
+
+    question = st.chat_input(
+        "Ask a question about the proposals in the database..."
+    )
+
+    if question:
+        st.write(
+            f"You asked {question}"
+        )
+        st.write("Thinking...")
+
+        response = client.models.generate_content(
+            model="gemini-3.6-flash",
+            contents=f"""
+            You are an assistant helping senior NHS leaders find
+            information about HSMA Lambda project proposals that have
+            been previously submitted (some of which will have turned
+            into active or even completed projects).
+
+            Only answer using the proposal information provided.  If
+            there are no matching proposals, say so.
+
+            Here are the project proposals :
+            {proposal_context}
+
+            Here's the question :
+            {question}
+            """
+        )
+
+        answer = response.text
+
+        st.write(answer)
