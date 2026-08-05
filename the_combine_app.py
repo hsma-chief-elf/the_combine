@@ -15,7 +15,7 @@ st.markdown("""
 }
 
 .st-key-active_proposals div[data-testid="stExpander"] summary {
-    background-color: #0da64d;
+    background-color: #0000ff;
     color: #fdfdfd;
 }
 
@@ -24,14 +24,31 @@ st.markdown("""
     color: black
 }
 
+.st-key-completed_proposals div[data-testid="stExpander"] summary {
+    background-color: #0da64d;
+    color: #fdfdfd;
+}
+
+.st-key-completed_proposals div[data-testid="stExpander"] details > div {
+    background-color: white;
+    color: black
+}
+
 .st-key-inactive_proposals {
-    background-color: #350053;
+    background-color: #2b0043;
     border: 1px solid #f5f9fc;
     border-radius: 10px;
     padding: 10px;
 }
 
 .st-key-active_proposals {
+    background-color: #080072;
+    border: 1px solid #f5f9fc;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.st-key-completed_proposals {
     background-color: #004501;
     border: 1px solid #f5f9fc;
     border-radius: 10px;
@@ -63,64 +80,124 @@ def run_query_main_table():
 st.title("Welcome to The Combine - the hub for HSMA Lambda Project Proposals")
 
 # Set up main sections of the app
-col_left, col_mid, col_right = st.columns([0.25,0.25,0.5])
+col_left, col_right = st.columns([0.5,0.5])
 
 # Grab contents of main the_combine table from Supabase DB
 rows_main = run_query_main_table()
 
-# Inactive proposals section
+# Proposals information section
 with col_left:
-    with st.container(height=600, key="inactive_proposals"):
-        for i in range(len(rows_main.data)-1,-1,-1):
-            if rows_main.data[i]['status'] == "inactive":
-                headline = (
-                    f"**[{rows_main.data[i]['proposal_id']}]  " +
-                    f"{rows_main.data[i]['proposal_title']}**" +
-                    "\n\n" +
-                    "Proposed by : "
-                    f"*{rows_main.data[i]['proposer_name']} (" +
-                    f"{rows_main.data[i]['proposer_role']}, " +
-                    f"{rows_main.data[i]['proposer_org']})*" +
-                    "\n\n" +
-                    f"Tag: {rows_main.data[i]['area_tag']} " +
-                    f"(Submitted: {rows_main.data[i]['submission_month']} " +
-                    f"{rows_main.data[i]['submission_year']})"
-                )
+    # Tabs for proposal categories
+    tab_inactive, tab_active, tab_completed = st.tabs(
+        ["Submitted Proposals",
+        "Proposals currently Active as Projects",
+        "Completed Projects"]
+    )
 
-                with st.expander(headline):
-                    st.write(
-                        rows_main.data[i]['proposal_desc'] +
+    # Inactive proposals
+    with tab_inactive:
+        with st.container(height=600, key="inactive_proposals"):
+            st.header(
+                "Submitted Proposals"
+            )
+            st.write(
+                "This section lists HSMA Lambda proposals that have been " +
+                "submitted, but are not yet active HSMA projects"
+            )
+            for i in range(len(rows_main.data)-1,-1,-1):
+                if rows_main.data[i]['status'] == "inactive":
+                    headline = (
+                        f"**[{rows_main.data[i]['proposal_id']}]  " +
+                        f"{rows_main.data[i]['proposal_title']}**" +
                         "\n\n" +
-                        "**Collaborators:**" +
+                        "Proposed by : "
+                        f"*{rows_main.data[i]['proposer_name']} (" +
+                        f"{rows_main.data[i]['proposer_role']}, " +
+                        f"{rows_main.data[i]['proposer_org']})*" +
                         "\n\n" +
-                        rows_main.data[i]['collaborators']
+                        f"Tag: {rows_main.data[i]['area_tag']} " +
+                        f"(Submitted: {rows_main.data[i]['submission_month']} " +
+                        f"{rows_main.data[i]['submission_year']})"
                     )
 
-# Active proposals section
-with col_mid:
-    with st.container(height=600, key="active_proposals"):
-        for i in range(len(rows_main.data)-1,-1,-1):
-            if rows_main.data[i]['status'] == "active":
-                headline = (
-                    f"**[{rows_main.data[i]['proposal_id']}]  " +
-                    f"{rows_main.data[i]['proposal_title']}**" +
-                    "\n\n" +
-                    "Proposed by : "
-                    f"*{rows_main.data[i]['proposer_name']} (" +
-                    f"{rows_main.data[i]['proposer_role']}, " +
-                    f"{rows_main.data[i]['proposer_org']})*" +
-                    "\n\n" +
-                    f"Tag: {rows_main.data[i]['area_tag']} " +
-                    f"(Submitted: {rows_main.data[i]['submission_month']} " +
-                    f"{rows_main.data[i]['submission_year']})"
-                )
+                    with st.expander(headline):
+                        st.write(
+                            rows_main.data[i]['proposal_desc'] +
+                            "\n\n" +
+                            "**Collaborators:**" +
+                            "\n\n" +
+                            rows_main.data[i]['collaborators']
+                        )
 
-                with st.expander(headline):
-                    st.write(
-                        rows_main.data[i]['proposal_desc'] +
+    # Active projects
+    with tab_active:
+        with st.container(height=600, key="active_proposals"):
+            st.header(
+                "Active Projects"
+            )
+            st.write(
+                "This section lists HSMA Lambda proposals that are currently " +
+                "being worked on as active HSMA projects"
+            )
+
+            for i in range(len(rows_main.data)-1,-1,-1):
+                if rows_main.data[i]['status'] == "active":
+                    headline = (
+                        f"**[{rows_main.data[i]['proposal_id']}]  " +
+                        f"{rows_main.data[i]['proposal_title']}**" +
                         "\n\n" +
-                        "**Collaborators:**" +
+                        "Proposed by : "
+                        f"*{rows_main.data[i]['proposer_name']} (" +
+                        f"{rows_main.data[i]['proposer_role']}, " +
+                        f"{rows_main.data[i]['proposer_org']})*" +
                         "\n\n" +
-                        rows_main.data[i]['collaborators']
+                        f"Tag: {rows_main.data[i]['area_tag']} " +
+                        f"(Submitted: {rows_main.data[i]['submission_month']} " +
+                        f"{rows_main.data[i]['submission_year']})"
                     )
+
+                    with st.expander(headline):
+                        st.write(
+                            rows_main.data[i]['proposal_desc'] +
+                            "\n\n" +
+                            "**Collaborators:**" +
+                            "\n\n" +
+                            rows_main.data[i]['collaborators']
+                        )
+
+    # Completed projects
+    with tab_completed:
+        with st.container(height=600, key="completed_proposals"):
+            st.header(
+                "Completed Projects"
+            )
+            st.write(
+                "This section lists HSMA Lambda proposals that were " +
+                "completed as part of the HSMA programme"
+            )
+
+            for i in range(len(rows_main.data)-1,-1,-1):
+                if rows_main.data[i]['status'] == "completed":
+                    headline = (
+                        f"**[{rows_main.data[i]['proposal_id']}]  " +
+                        f"{rows_main.data[i]['proposal_title']}**" +
+                        "\n\n" +
+                        "Proposed by : "
+                        f"*{rows_main.data[i]['proposer_name']} (" +
+                        f"{rows_main.data[i]['proposer_role']}, " +
+                        f"{rows_main.data[i]['proposer_org']})*" +
+                        "\n\n" +
+                        f"Tag: {rows_main.data[i]['area_tag']} " +
+                        f"(Submitted: {rows_main.data[i]['submission_month']} " +
+                        f"{rows_main.data[i]['submission_year']})"
+                    )
+
+                    with st.expander(headline):
+                        st.write(
+                            rows_main.data[i]['proposal_desc'] +
+                            "\n\n" +
+                            "**Collaborators:**" +
+                            "\n\n" +
+                            rows_main.data[i]['collaborators']
+                        )
 
