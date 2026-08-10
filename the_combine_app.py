@@ -248,50 +248,58 @@ with col_mid:
     )
 
     if question:
-        st.session_state.messages.append(
-            {
-                "role": "user",
-                "content": question
-            }
-        )
-
-        conversation = ""
-
-        for message in st.session_state.messages:
-            conversation += f"{message['role']}: {message['content']}\n"
-
-        with st.spinner("Thinking..."):
-            response = client.models.generate_content(
-                #model="gemini-3.6-flash",
-                model="gemini-3.5-flash-lite",
-                contents=f"""
-                You are an assistant helping senior NHS leaders find
-                information about HSMA Lambda project proposals that have
-                been previously submitted (some of which will have turned
-                into active or even completed projects, which you can see by
-                their status).
-
-                Only answer using the proposal information provided.  If
-                there are no matching proposals, say so.
-
-                Here are the project proposals :
-                {proposal_context}
-
-                And here's the conversation so far :
-                {conversation}
-
-                Please answer the user's latest question.
-                """
+        try:
+            st.session_state.messages.append(
+                {
+                    "role": "user",
+                    "content": question
+                }
             )
 
-        answer = response.text
+            conversation = ""
 
-        st.session_state.messages.append(
-            {
-                "role": "assistant",
-                "content" : answer
-            }
-        )
+            for message in st.session_state.messages:
+                conversation += f"{message['role']}: {message['content']}\n"
 
-        st.rerun()
+            with st.spinner("Thinking..."):
+                response = client.models.generate_content(
+                    #model="gemini-3.6-flash",
+                    model="gemini-3.5-flash-liteBLAH",
+                    contents=f"""
+                    You are an assistant helping senior NHS leaders find
+                    information about HSMA Lambda project proposals that have
+                    been previously submitted (some of which will have turned
+                    into active or even completed projects, which you can see by
+                    their status).
+
+                    Only answer using the proposal information provided.  If
+                    there are no matching proposals, say so.
+
+                    Here are the project proposals :
+                    {proposal_context}
+
+                    And here's the conversation so far :
+                    {conversation}
+
+                    Please answer the user's latest question.
+                    """
+                )
+
+            answer = response.text
+
+            st.session_state.messages.append(
+                {
+                    "role": "assistant",
+                    "content" : answer
+                }
+            )
+
+            st.rerun()
+        except:
+            st.write(
+                """
+                Sorry - there was a problem connecting to Gemini.
+                Please try again later.
+                """
+            )
 
