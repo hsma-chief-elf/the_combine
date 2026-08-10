@@ -63,6 +63,13 @@ st.markdown("""
     border-radius: 10px;
     padding: 10px;
 }
+
+.st-key-new_prop_container {
+    background-color: #636363;
+    border: 1px solid #f5f9fc;
+    border-radius: 10px;
+    padding: 10px;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -318,7 +325,99 @@ with col_mid:
         st.rerun()
 
 # Proposals input form section
-# with col_right:
+with col_right:
+    st.subheader("Submit a New Project Proposal")
+    with st.container(height=600, key="new_prop_container"):
+        st.write(
+            """
+            Use this form to submit a new project proposal.  You should only use
+            this form if you have attended a HSMA Lambda workshop.  However, 
+            you may 
+            submit proposals that you didn't formulate at the workshop.  Please
+            provide as much information as possible.  You should also make 
+            a note 
+            of the proposal number you are allocated when you submit the proposal -
+            if you are sending an applicant onto the HSMA programme with the
+            intention to work on this project, they will need to provide this
+            proposal number on their application.
+            """
+        )
+
+        with st.form(
+            "new_proposal_form",
+            clear_on_submit=True,
+            enter_to_submit=False
+        ):
+            new_name = st.text_input(
+                "What's your name?"
+            )
+
+            new_role = st.text_input(
+                "What's your job title?"
+            )
+
+            new_org = st.text_input(
+                "What's your organisation?"
+            )
+
+            new_title = st.text_input(
+                "What's the title of your proposal?"
+            )
+
+            new_desc_question = st.text_area(
+                "What are the question(s) you want the project to answer? " +
+                "Capture any 'what if?' scenarios you want to test, " +
+                "if relevant. Please be as specific as possible, " +
+                "and ensure your question(s) are clear, focused and relevant " +
+                "for modelling.",
+                height="content"
+            )
+
+            new_desc_background = st.text_area(
+                "What's the background to the problem you're trying to solve? "+
+                "What's happening now and why is this a problem?  Why is now "+ 
+                "the right time to try to solve this?",
+                height="content"
+            )
+
+            new_desc_pot_impact = st.text_area(
+                "What would be the potential impact of solving this problem? " +
+                "Specify the potential impact for your organisation " +
+                "(particularly in terms of any cost savings or efficiencies) " +
+                "and for patients.",
+                height="content"
+            )
+
+            new_collaborators = st.text_area(
+                "Please list any organisations with which you intend to " +
+                "collaborate on this project.  If there are no collaborators, "+
+                "please leave this blank.  We encourage HSMA Lambda project " +
+                "proposals to consider collaboration wherever possible to " +
+                "maximise impact and share learning, expertise and resources " +
+                "to tackle common problems.  We consider collaboration and " +
+                "scope of impact strongly when considering which HSMA " +
+                "projects are selected for mentoring support.  We encourage " +
+                "you to chat on the provided Discourse platform to continue " +
+                "to discuss ideas with others who have been on the " +
+                "HSMA-Lambda series of workshops.",
+                height="content"
+            )
+
+            st.write(
+                """
+                Please note, we cannot guarantee that submitted project
+                proposals will be selected to receive mentoring support in the
+                HSMA programme, or that the applicant(s) sent onto the
+                programme to undertake the work will be successful in their
+                application.  By submitting the form, you understand that we
+                cannot guarantee our support or mentoring provision for the 
+                work you are proposing.
+                """
+            )
+
+            proposal_submitted = st.form_submit_button("Submit Proposal")
+
+            
 
 if st.session_state.pop("error_harvester", False):
     show_error_harvester()
