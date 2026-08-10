@@ -254,9 +254,10 @@ with col_left:
 
 # LLM Chatbot section
 with col_mid:
-    st.header("The Combine Harvester")
+    st.subheader("The Combine Harvester")
+    st.write(":sparkles: *Powered by Gemini*")
 
-    with st.container(height=500):
+    with st.container(height=480):
         for message in st.session_state.messages:
             with st.chat_message(message['role']):
                 st.markdown(message['content'])
