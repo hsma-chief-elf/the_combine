@@ -116,6 +116,7 @@ def create_proposal_context(rows):
 
     return context
 
+# Decorated function to display error in dialog box for combine harvester errors
 @st.dialog("Something went wrong")
 def show_error_harvester():
     st.write(
@@ -132,6 +133,19 @@ def show_error_harvester():
     st.caption(chosen_hl_quote)
     if st.button("OK"):
         st.rerun()
+
+# Decorated function to display new proposal submission confirmation in dialog
+# box
+@st.dialog("Proposal Submitted")
+def show_new_prop_confirmation(pr_id, pr_title):
+    st.write(
+        f"Your proposal **{pr_title}** has been successfully submitted."
+    )
+    st.write(
+        f"Your proposal ID is **{pr_id}**.  Please make a note of this and " +
+        "ensure you pass it to any staff applying to the HSMA programme to " +
+        "work on this project, as they will need it at the application stage."
+    )
 
 # Title for app
 st.title("The Combine")
@@ -490,10 +504,18 @@ with col_right:
                     except:
                         pass
 
-                # add dialog box confirming number and title
+                st.session_state.pr_id = new_prop_id
+                st.session_state.pr_title = new_title
+                st.session_state.new_proposal_submitted = True
 
                 st.rerun()
 
 if st.session_state.pop("error_harvester", False):
     show_error_harvester()
+
+if st.session_state.pop("new_proposal_submitted", False):
+    show_new_prop_confirmation(
+        st.session_state.pr_id,
+        st.session_state.pr_title
+    )
 
