@@ -2,6 +2,7 @@ import streamlit as st
 from supabase import create_client, Client
 from google import genai
 import random
+from datetime import datetime
 
 client = genai.Client(
     api_key = st.secrets["GEMINI_API_KEY"]
@@ -417,7 +418,81 @@ with col_right:
 
             proposal_submitted = st.form_submit_button("Submit Proposal")
 
-            
+            # Update database with new entry
+            if proposal_submitted:
+                # Grab current rows in database table
+                rows = run_query_main_table()
+
+                # Concatenate the proposal description from the provided
+                # information
+                new_desc = (
+                    "Question(s):" +
+                    "\n\n" +
+                    new_desc_question +
+                    "\n\n" +
+                    "Background:" +
+                    "\n\n" +
+                    new_desc_background +
+                    "\n\n" +
+                    "Potential Impact:" +
+                    "\n\n" +
+                    new_desc_pot_impact
+                )
+
+                # If collaborators field is empty, replace it with "(None at
+                # this time)"
+                if new_collaborators == "":
+                    new_collaborators = "(None at this time)"
+
+                # Identify month and year of submission
+                list_of_months = [
+                    "Jan",
+                    "Feb",
+                    "Mar",
+                    "Apr",
+                    "May",
+                    "Jun",
+                    "Jul",
+                    "Aug",
+                    "Sep",
+                    "Oct",
+                    "Nov",
+                    "Dec"
+                ]
+                new_month = list_of_months[
+                    datetime.today().month - 1
+                ]
+                new_year = datetime.today().year
+
+                while True:
+                    try:
+                        # Randomly generate a proposal identifier
+                        new_prop_id = random.randint(100000,999999)
+
+                        response = (
+                            supabase.table("lambda_proposals").insert(
+                                {
+                                    "proposal_id":new_prop_id,
+                                    "proposal_title":new_title,
+                                    "proposer_name":new_name,
+                                    "proposer_role":new_role,
+                                    "proposer_org":new_org,
+                                    "proposal_desc":new_desc,
+                                    "collaborators":new_collaborators,
+                                    "submission_month":new_month,
+                                    "submission_year":new_year,
+                                    "status":"inactive"
+                                }
+                            ).execute()
+                        )
+
+                        break
+                    except:
+                        pass
+
+                # add dialog box confirming number and title
+
+                st.rerun()
 
 if st.session_state.pop("error_harvester", False):
     show_error_harvester()
