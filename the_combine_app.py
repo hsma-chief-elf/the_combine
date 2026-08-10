@@ -95,8 +95,13 @@ def create_proposal_context(rows):
         Title: {row['proposal_title']}
         Organisation: {row['proposer_org']}
         Proposer: {row['proposer_name']}
+        Role of Proposer : {row['proposer_role']}
         Description:
         {row['proposal_desc']}
+        Collaborators:
+        {row['collaborators']}
+        Date Submitted : {row['submission_month']} {row['submission_year']}
+        Status of Proposal : {row['status']}
         ---
         """
 
@@ -262,7 +267,8 @@ with col_mid:
                 You are an assistant helping senior NHS leaders find
                 information about HSMA Lambda project proposals that have
                 been previously submitted (some of which will have turned
-                into active or even completed projects).
+                into active or even completed projects, which you can see by
+                their status).
 
                 Only answer using the proposal information provided.  If
                 there are no matching proposals, say so.
