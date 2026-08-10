@@ -1,6 +1,7 @@
 import streamlit as st
 from supabase import create_client, Client
 from google import genai
+import random
 
 client = genai.Client(
     api_key = st.secrets["GEMINI_API_KEY"]
@@ -106,6 +107,23 @@ def create_proposal_context(rows):
         """
 
     return context
+
+@st.dialog("Something went wrong")
+def show_error():
+    st.write(
+        "Sorry - I couldn't get a response from Gemini.  Please try again"
+    )
+    hl_quotes = [
+        "Wake up and... smell the ashes...",
+        "They're waiting for you Gordon... in the test chamber",
+        """The right man in the wrong place can make all the difference in the
+        world""",
+        "Prepare... for unforeseen consequences..."
+    ]
+    chosen_hl_quote = random.choice(hl_quotes)
+    st.caption(chosen_hl_quote)
+    if st.button("OK"):
+        st.rerun()
 
 # Title for app
 st.title("The Combine")
@@ -244,7 +262,7 @@ with col_mid:
                 st.markdown(message['content'])
 
     question = st.chat_input(
-        "Ask a question about the proposals in the database..."
+        "Ask me anything about the proposals in the database..."
     )
 
     if question:
@@ -264,7 +282,7 @@ with col_mid:
             with st.spinner("Thinking..."):
                 response = client.models.generate_content(
                     #model="gemini-3.6-flash",
-                    model="gemini-3.5-flash-liteBLAH",
+                    model="gemini-3.5-flash-lite",
                     contents=f"""
                     You are an assistant helping senior NHS leaders find
                     information about HSMA Lambda project proposals that have
@@ -293,13 +311,11 @@ with col_mid:
                     "content" : answer
                 }
             )
-
-            st.rerun()
         except:
-            st.write(
-                """
-                Sorry - there was a problem connecting to Gemini.
-                Please try again later.
-                """
-            )
+            st.session_state.error = True
+            
+        st.rerun()
+
+if st.session_state.pop("error", False):
+    show_error()
 
