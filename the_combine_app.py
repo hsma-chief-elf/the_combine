@@ -95,7 +95,6 @@ def create_proposal_context(rows):
         Title: {row['proposal_title']}
         Organisation: {row['proposer_org']}
         Proposer: {row['proposer_name']}
-        Tag: {row['area_tag']}
         Description:
         {row['proposal_desc']}
         ---
@@ -147,7 +146,6 @@ with col_left:
                         f"{rows_main.data[i]['proposer_role']}, " +
                         f"{rows_main.data[i]['proposer_org']})*" +
                         "\n\n" +
-                        f"Tag: {rows_main.data[i]['area_tag']} " +
                         f"(Submitted: {rows_main.data[i]['submission_month']} " +
                         f"{rows_main.data[i]['submission_year']})"
                     )
@@ -183,7 +181,6 @@ with col_left:
                         f"{rows_main.data[i]['proposer_role']}, " +
                         f"{rows_main.data[i]['proposer_org']})*" +
                         "\n\n" +
-                        f"Tag: {rows_main.data[i]['area_tag']} " +
                         f"(Submitted: {rows_main.data[i]['submission_month']} " +
                         f"{rows_main.data[i]['submission_year']})"
                     )
@@ -219,7 +216,6 @@ with col_left:
                         f"{rows_main.data[i]['proposer_role']}, " +
                         f"{rows_main.data[i]['proposer_org']})*" +
                         "\n\n" +
-                        f"Tag: {rows_main.data[i]['area_tag']} " +
                         f"(Submitted: {rows_main.data[i]['submission_month']} " +
                         f"{rows_main.data[i]['submission_year']})"
                     )
