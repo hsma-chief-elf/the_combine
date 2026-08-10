@@ -109,7 +109,7 @@ def create_proposal_context(rows):
     return context
 
 @st.dialog("Something went wrong")
-def show_error():
+def show_error_harvester():
     st.write(
         "Sorry - I couldn't get a response from Gemini.  Please try again"
     )
@@ -313,10 +313,13 @@ with col_mid:
                 }
             )
         except:
-            st.session_state.error = True
+            st.session_state.error_harvester = True
             
         st.rerun()
 
-if st.session_state.pop("error", False):
-    show_error()
+# Proposals input form section
+# with col_right:
+
+if st.session_state.pop("error_harvester", False):
+    show_error_harvester()
 
