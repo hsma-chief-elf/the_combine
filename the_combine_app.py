@@ -262,7 +262,8 @@ with col_mid:
 
         with st.spinner("Thinking..."):
             response = client.models.generate_content(
-                model="gemini-3.6-flash",
+                #model="gemini-3.6-flash",
+                model="gemini-3.5-flash-lite",
                 contents=f"""
                 You are an assistant helping senior NHS leaders find
                 information about HSMA Lambda project proposals that have
