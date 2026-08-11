@@ -15,7 +15,7 @@ if "messages" not in st.session_state:
 st.markdown("""
 <style>
 .st-key-inactive_proposals div[data-testid="stExpander"] summary {
-    background-color: #340a95;
+    background-color: #875a00;
     color: #fdfdfd;
 }
 
@@ -45,7 +45,7 @@ st.markdown("""
 }
 
 .st-key-inactive_proposals {
-    background-color: #2b0043;
+    background-color: #3e3000;
     border: 1px solid #f5f9fc;
     border-radius: 10px;
     padding: 10px;
@@ -65,8 +65,22 @@ st.markdown("""
     padding: 10px;
 }
 
+
+.st-key-chat_history_container {
+    background-color: #230949;
+    border: 1px solid #f5f9fc;
+    border-radius: 10px;
+    padding: 10px;
+}
+
 .st-key-new_prop_container {
     background-color: #636363;
+    border: 1px solid #f5f9fc;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.st-key-form_error_container {
     border: 1px solid #f5f9fc;
     border-radius: 10px;
     padding: 10px;
@@ -290,7 +304,7 @@ with col_mid:
     st.subheader("The Combine Harvester")
     st.write(":sparkles: *Powered by Gemini*")
 
-    with st.container(height=480):
+    with st.container(height=480, key="chat_history_container"):
         for message in st.session_state.messages:
             with st.chat_message(message['role']):
                 st.markdown(message['content'])
