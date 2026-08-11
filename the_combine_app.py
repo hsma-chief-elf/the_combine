@@ -161,7 +161,7 @@ def show_new_prop_confirmation(pr_id, pr_title):
     )
 
 # Set up header columns
-header_col_left, header_col_right = st.columns([0.1,0.9])
+header_col_left, header_col_mid, header_col_right = st.columns([0.1,0.8,0.1])
 
 # Logo section
 with header_col_left:
@@ -170,7 +170,7 @@ with header_col_left:
     st.image("hsma_logo.png", width="stretch")
 
 # Header intro section 
-with header_col_right:
+with header_col_mid:
     # Title for app
     st.header("The Combine")
     st.write(
@@ -196,6 +196,10 @@ with header_col_right:
         HSMA Lambda : https://hsma.co.uk/lambda.html
         """
     )
+
+# HL2 image section
+with header_col_right:
+    st.image("hl_2_image.png", width="stretch")
 
 # Set up main sections of the app
 col_left, col_mid, col_right_f, col_right_e = st.columns([0.25,0.25,0.35,0.15])
