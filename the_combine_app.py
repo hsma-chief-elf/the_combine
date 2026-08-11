@@ -154,7 +154,7 @@ st.write(
 )
 
 # Set up main sections of the app
-col_left, col_mid, col_right = st.columns([0.25,0.25,0.5])
+col_left, col_mid, col_right_f, col_right_e = st.columns([0.25,0.25,0.35,0.15])
 
 # Grab contents of main the_combine table from Supabase DB
 rows_main = run_query_main_table()
@@ -350,9 +350,15 @@ with col_mid:
             
         st.rerun()
 
+with col_right_e:
+    st.subheader("Form Errors")
+    # Form error container
+    form_error_container = st.container(height=600, key="form_error_container")
+
 # Proposals input form section
-with col_right:
+with col_right_f:
     st.subheader("Submit a New Project Proposal")
+
     with st.container(height=600, key="new_prop_container"):
         st.write(
             """
@@ -474,7 +480,7 @@ with col_right:
 
                 if input_errors:
                     for error in input_errors:
-                        st.error(error)
+                        form_error_container.error(error)
                 else:
                     # Check if any of the individual description inputs are 
                     # blank and replace with "Information not provided" if so
