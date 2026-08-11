@@ -171,7 +171,11 @@ st.write(
 col_left, col_mid, col_right_f, col_right_e = st.columns([0.25,0.25,0.35,0.15])
 
 # Grab contents of main the_combine table from Supabase DB
-rows_main = run_query_main_table()
+try:
+    rows_main = run_query_main_table()
+except:
+    col_left.error("Error connecting to database.  Please try again later")
+    st.stop()
 
 proposal_context = create_proposal_context(rows_main)
 
