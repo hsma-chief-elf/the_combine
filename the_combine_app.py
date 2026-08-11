@@ -433,108 +433,146 @@ with col_right:
                 # Grab current rows in database table
                 rows = run_query_main_table()
 
-                # Concatenate the proposal description from the provided
-                # information
-                new_desc = (
-                    "Question(s):" +
-                    "\n\n" +
-                    new_desc_question +
-                    "\n\n" +
-                    "Background:" +
-                    "\n\n" +
-                    new_desc_background +
-                    "\n\n" +
-                    "Potential Impact:" +
-                    "\n\n" +
-                    new_desc_pot_impact
-                )
+                input_errors = []
 
-                # If collaborators field is empty, replace it with "(None at
-                # this time)"
-                if new_collaborators == "":
-                    new_collaborators = "(None at this time)"
+                # Identify any inputs (other than collaborators) that are empty
+                # (or just whitespace) and throw an error if they are
+                if not new_name.strip():
+                    input_errors.append("You must provide your name")
 
-                # Identify month and year of submission
-                list_of_months = [
-                    "Jan",
-                    "Feb",
-                    "Mar",
-                    "Apr",
-                    "May",
-                    "Jun",
-                    "Jul",
-                    "Aug",
-                    "Sep",
-                    "Oct",
-                    "Nov",
-                    "Dec"
-                ]
-                new_month = list_of_months[
-                    datetime.today().month - 1
-                ]
-                new_year = datetime.today().year
+                if not new_role.strip():
+                    input_errors.append("You must provide your role")
 
-                # Try generating proposal title using AI
-                try:
-                    response = client.models.generate_content(
-                        model="gemini-3.5-flash-lite",
-                        contents=f"""
-                        A senior NHS leader has just submitted the following
-                        information as a proposal for a modelling / data science
-                        project to be undertaken as part of the HSMA Programme.
+                if not new_org.strip():
+                    input_errors.append("You must provide your organisation")
 
-                        Please come up with a title for the proposal that can
-                        be used as the project title if selected.  Where
-                        relevant, provide the geographic area of the proposed
-                        work in the title.
-
-                        This is a description of what they want to do :
-                        {new_desc}
-                        This is the organisation that is proposing the work :
-                        {new_org}
-                        And here are the collaborators (if any) :
-                        {new_collaborators}
-
-                        Please provide your answer simply as the title you come
-                        up with - nothing else.
-                        """
+                if (
+                    not new_desc_question.strip() and
+                    not new_desc_background.strip() and
+                    not new_desc_pot_impact.strip()
+                ):
+                    input_errors.append(
+                        "You must provide some proposal information"
                     )
 
-                    new_title = response.text
-                except:
-                    new_title = "Placeholder Title (Final TBC)"
+                if input_errors:
+                    for error in input_errors:
+                        st.error(error)
+                else:
+                    # Check if any of the individual description inputs are 
+                    # blank and replace with "Information not provided" if so
+                    if not new_desc_question.strip():
+                        new_desc_question = "Information not provided"
 
-                while True:
+                    if not new_desc_background.strip():
+                        new_desc_background = "Information not provided"
+
+                    if not new_desc_pot_impact.strip():
+                        new_desc_pot_impact = "Information not provided"
+
+                    # Concatenate the proposal description from the provided
+                    # information
+                    new_desc = (
+                        "Question(s):" +
+                        "\n\n" +
+                        new_desc_question +
+                        "\n\n" +
+                        "Background:" +
+                        "\n\n" +
+                        new_desc_background +
+                        "\n\n" +
+                        "Potential Impact:" +
+                        "\n\n" +
+                        new_desc_pot_impact
+                    )
+
+                    # If collaborators field is empty, replace it with "(None at
+                    # this time)"
+                    if new_collaborators == "":
+                        new_collaborators = "(None at this time)"
+
+                    # Identify month and year of submission
+                    list_of_months = [
+                        "Jan",
+                        "Feb",
+                        "Mar",
+                        "Apr",
+                        "May",
+                        "Jun",
+                        "Jul",
+                        "Aug",
+                        "Sep",
+                        "Oct",
+                        "Nov",
+                        "Dec"
+                    ]
+                    new_month = list_of_months[
+                        datetime.today().month - 1
+                    ]
+                    new_year = datetime.today().year
+
+                    # Try generating proposal title using AI
                     try:
-                        # Randomly generate a proposal identifier
-                        new_prop_id = random.randint(100000,999999)
+                        response = client.models.generate_content(
+                            model="gemini-3.5-flash-lite",
+                            contents=f"""
+                            A senior NHS leader has just submitted the following
+                            information as a proposal for a modelling / data 
+                            science project to be undertaken as part of the 
+                            HSMA Programme.
 
-                        response = (
-                            supabase.table("lambda_proposals").insert(
-                                {
-                                    "proposal_id":new_prop_id,
-                                    "proposal_title":new_title,
-                                    "proposer_name":new_name,
-                                    "proposer_role":new_role,
-                                    "proposer_org":new_org,
-                                    "proposal_desc":new_desc,
-                                    "collaborators":new_collaborators,
-                                    "submission_month":new_month,
-                                    "submission_year":new_year,
-                                    "status":"inactive"
-                                }
-                            ).execute()
+                            Please come up with a title for the proposal that  
+                            can be used as the project title if selected.  Where
+                            relevant, provide the geographic area of the 
+                            proposed work in the title.
+
+                            This is a description of what they want to do:
+                            {new_desc}
+                            This is the organisation that is proposing the work:
+                            {new_org}
+                            And here are the collaborators (if any):
+                            {new_collaborators}
+
+                            Please provide your answer simply as the title you 
+                            come up with - nothing else.
+                            """
                         )
 
-                        break
+                        new_title = response.text
                     except:
-                        pass
+                        new_title = "Placeholder Title (Final TBC)"
 
-                st.session_state.pr_id = new_prop_id
-                st.session_state.pr_title = new_title
-                st.session_state.new_proposal_submitted = True
+                    while True:
+                        try:
+                            # Randomly generate a proposal identifier
+                            new_prop_id = random.randint(100000,999999)
 
-                st.rerun()
+                            response = (
+                                supabase.table("lambda_proposals").insert(
+                                    {
+                                        "proposal_id":new_prop_id,
+                                        "proposal_title":new_title,
+                                        "proposer_name":new_name,
+                                        "proposer_role":new_role,
+                                        "proposer_org":new_org,
+                                        "proposal_desc":new_desc,
+                                        "collaborators":new_collaborators,
+                                        "submission_month":new_month,
+                                        "submission_year":new_year,
+                                        "status":"inactive"
+                                    }
+                                ).execute()
+                            )
+
+                            break
+                        except:
+                            pass
+
+                    st.session_state.pr_id = new_prop_id
+                    st.session_state.pr_title = new_title
+                    st.session_state.new_proposal_submitted = True
+
+                    st.rerun()
 
 if st.session_state.pop("error_harvester", False):
     show_error_harvester()
