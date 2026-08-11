@@ -375,10 +375,6 @@ with col_right:
                 "What's your organisation?"
             )
 
-            new_title = st.text_input(
-                "What's the title of your proposal?"
-            )
-
             new_desc_question = st.text_area(
                 "What are the question(s) you want the project to answer? " +
                 "Capture any 'what if?' scenarios you want to test, " +
@@ -506,7 +502,7 @@ with col_right:
 
                     new_title = response.text
                 except:
-                    pass
+                    new_title = "Placeholder Title (Final TBC)"
 
                 while True:
                     try:
