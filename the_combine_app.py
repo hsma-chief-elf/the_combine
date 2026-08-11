@@ -65,7 +65,6 @@ st.markdown("""
     padding: 10px;
 }
 
-
 .st-key-chat_history_container {
     background-color: #230949;
     border: 1px solid #f5f9fc;
@@ -161,11 +160,42 @@ def show_new_prop_confirmation(pr_id, pr_title):
         "work on this project, as they will need it at the application stage."
     )
 
-# Title for app
-st.title("The Combine")
-st.write(
-    "Welcome to The Combine - the hub for HSMA Lambda Project Proposals."
-)
+# Set up header columns
+header_col_left, header_col_right = st.columns([0.1,0.9])
+
+# Logo section
+with header_col_left:
+    st.image("arc_logo.jpg", width="stretch")
+
+    st.image("hsma_logo.png", width="stretch")
+
+# Header intro section 
+with header_col_right:
+    # Title for app
+    st.header("The Combine")
+    st.write(
+        """
+        Welcome to The Combine - the hub for HSMA Lambda Project Proposals.
+        \n
+        You can browse submitted project proposals using the section on the
+        left, and use the tabs to switch between proposals that have been
+        submitted but not yet turned into HSMA projects, those that are 
+        current
+        HSMA projects, and those that have been completed as HSMA projects.
+        Use the Combine Harvester to ask questions about the proposals in 
+        the
+        database.  For example, you could ask if any proposals are looking 
+        at
+        something you're interested in, or if there are any proposals 
+        submitted
+        from your organisation.  The Combine Harvester is AI-powered.
+        Use the form on the right to submit new proposals.  You should only
+        submit proposals if you have attended a HSMA Lambda workshop.\n
+        If you have any queries, please contact penchord@exeter.ac.uk
+        HSMA : https://hsma.co.uk 
+        HSMA Lambda : https://hsma.co.uk/lambda.html
+        """
+    )
 
 # Set up main sections of the app
 col_left, col_mid, col_right_f, col_right_e = st.columns([0.25,0.25,0.35,0.15])
