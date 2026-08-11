@@ -478,6 +478,36 @@ with col_right:
                 ]
                 new_year = datetime.today().year
 
+                # Try generating proposal title using AI
+                try:
+                    response = client.models.generate_content(
+                        model="gemini-3.5-flash-lite",
+                        contents=f"""
+                        A senior NHS leader has just submitted the following
+                        information as a proposal for a modelling / data science
+                        project to be undertaken as part of the HSMA Programme.
+
+                        Please come up with a title for the proposal that can
+                        be used as the project title if selected.  Where
+                        relevant, provide the geographic area of the proposed
+                        work in the title.
+
+                        This is a description of what they want to do :
+                        {new_desc}
+                        This is the organisation that is proposing the work :
+                        {new_org}
+                        And here are the collaborators (if any) :
+                        {new_collaborators}
+
+                        Please provide your answer simply as the title you come
+                        up with - nothing else.
+                        """
+                    )
+
+                    new_title = response.text
+                except:
+                    pass
+
                 while True:
                     try:
                         # Randomly generate a proposal identifier
