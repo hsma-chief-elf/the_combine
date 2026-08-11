@@ -161,6 +161,17 @@ rows_main = run_query_main_table()
 
 proposal_context = create_proposal_context(rows_main)
 
+# Reset form manually if required
+if st.session_state.get("clear_proposal_form", False):
+    st.session_state.new_name = ""
+    st.session_state.new_role = ""
+    st.session_state.new_org = ""
+    st.session_state.new_desc_question = ""
+    st.session_state.new_desc_background = ""
+    st.session_state.new_desc_pot_impact = ""
+    st.session_state.new_collaborators = ""
+    st.session_state.clear_proposal_form = False
+
 # Proposals information section
 with col_left:
     # Tabs for proposal categories
@@ -360,19 +371,21 @@ with col_right:
 
         with st.form(
             "new_proposal_form",
-            clear_on_submit=True,
             enter_to_submit=False
         ):
             new_name = st.text_input(
-                "What's your name?"
+                "What's your name?",
+                key="new_name"
             )
 
             new_role = st.text_input(
-                "What's your job title?"
+                "What's your job title?",
+                key="new_role"
             )
 
             new_org = st.text_input(
-                "What's your organisation?"
+                "What's your organisation?",
+                key="new_org"
             )
 
             new_desc_question = st.text_area(
@@ -381,14 +394,16 @@ with col_right:
                 "if relevant. Please be as specific as possible, " +
                 "and ensure your question(s) are clear, focused and relevant " +
                 "for modelling.",
-                height="content"
+                height="content",
+                key="new_desc_question"
             )
 
             new_desc_background = st.text_area(
                 "What's the background to the problem you're trying to solve? "+
                 "What's happening now and why is this a problem?  Why is now "+ 
                 "the right time to try to solve this?",
-                height="content"
+                height="content",
+                key="new_desc_background"
             )
 
             new_desc_pot_impact = st.text_area(
@@ -396,7 +411,8 @@ with col_right:
                 "Specify the potential impact for your organisation " +
                 "(particularly in terms of any cost savings or efficiencies) " +
                 "and for patients.",
-                height="content"
+                height="content",
+                key="new_desc_pot_impact"
             )
 
             new_collaborators = st.text_area(
@@ -411,7 +427,8 @@ with col_right:
                 "you to chat on the provided Discourse platform to continue " +
                 "to discuss ideas with others who have been on the " +
                 "HSMA-Lambda series of workshops.",
-                height="content"
+                height="content",
+                key="new_collaborators"
             )
 
             st.write(
@@ -571,6 +588,8 @@ with col_right:
                     st.session_state.pr_id = new_prop_id
                     st.session_state.pr_title = new_title
                     st.session_state.new_proposal_submitted = True
+
+                    st.session_state.clear_proposal_form = True
 
                     st.rerun()
 
