@@ -106,6 +106,10 @@ supabase = init_connection()
 def run_query_main_table():
     return supabase.table("lambda_proposals").select("*").execute()
 
+# Function to grab everything in the Supabase table draft_forms
+def run_query_draft_forms():
+    return supabase.table("draft_forms").select("*").execute()
+
 # Function to load all of the proposal information across the database into a
 # single text block, for use as context for LLM
 def create_proposal_context(rows):
@@ -158,6 +162,19 @@ def show_new_prop_confirmation(pr_id, pr_title):
         f"Your proposal ID is **{pr_id}**.  Please make a note of this and " +
         "ensure you pass it to any staff applying to the HSMA programme to " +
         "work on this project, as they will need it at the application stage."
+    )
+
+# Decorated function to display draft saving confirmation in dialog box
+@st.dialog("Draft Saved")
+def show_draft_saved_confirmation(dr_id):
+    st.write(
+        "Your form has been saved as a draft.  To load this draft back in the "+
+        f"future, you will need to provide your 4 digit draft ID:**{dr_id}**"
+    )
+    st.write(
+        "IMPORTANT: your proposal has NOT been submitted at this stage.  " +
+        "Once you submit your proposal, you will receive a separate 8 digit " +
+        "proposal reference number."
     )
 
 # Set up header columns
@@ -453,6 +470,16 @@ with tab_new:
                 """
             )
 
+            # Initilise values to be used as widgets on the form
+            new_prop_id = None
+            new_name = None
+            new_title = None
+            new_org = None
+            new_desc_question = None
+            new_desc_background = None
+            new_desc_pot_impact = None
+            new_collaborators = None
+
             with st.form(
                 "new_proposal_form",
                 enter_to_submit=False
@@ -528,6 +555,7 @@ with tab_new:
                 )
 
                 proposal_submitted = st.form_submit_button("Submit Proposal")
+                draft_saved = st.form_submit_button("Save as Draft")
 
                 # Update database with new entry
                 if proposal_submitted:
@@ -677,6 +705,40 @@ with tab_new:
 
                         st.rerun()
 
+                # Save as draft if user selects this button
+                if draft_saved:
+                    # Grab current rows in draft_forms table
+                    rows_draft = run_query_draft_forms()
+
+                    while True:
+                        try:
+                            # Randomly generate a draft identifier
+                            draft_id = random.randint(1000,9999)
+
+                            response = (
+                                supabase.table("draft_forms").insert(
+                                    {
+                                        "id":draft_id,
+                                        "draft_name":new_name,
+                                        "draft_title":new_title,
+                                        "draft_org":new_org,
+                                        "draft_questions":new_desc_question,
+                                        "draft_background":new_desc_background,
+                                        "draft_impact":new_desc_pot_impact,
+                                        "draft_collaborators":new_collaborators
+                                    }
+                                ).execute()
+                            )
+
+                            break
+                        except:
+                            pass
+
+                    st.session_state.dr_id = draft_id
+                    st.session_state.draft_submitted = True
+
+                    st.rerun()
+                        
 if st.session_state.pop("error_harvester", False):
     show_error_harvester()
 
@@ -684,5 +746,10 @@ if st.session_state.pop("new_proposal_submitted", False):
     show_new_prop_confirmation(
         st.session_state.pr_id,
         st.session_state.pr_title
+    )
+
+if st.session_state.pop("draft_submitted", False):
+    show_draft_saved_confirmation(
+        st.session_state.dr_id
     )
 
