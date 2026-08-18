@@ -1,3 +1,4 @@
+from streamlit import session_state
 import streamlit as st
 from supabase import create_client, Client
 from google import genai
@@ -176,6 +177,16 @@ def show_draft_saved_confirmation(dr_id):
         "Once you submit your proposal, you will receive a separate 8 digit " +
         "proposal reference number."
     )
+
+# Function to populate the proposal submission form from a loaded draft
+def populate_form_from_draft(draft):
+    st.session_state.new_name = draft.get("draft_name") or ""
+    st.session_state.new_role = draft.get("draft_role") or ""
+    st.session_state.new_org = draft.get("draft_org") or ""
+    st.session_state.new_desc_question = draft.get("draft_questions") or ""
+    st.session_state.new_desc_background = draft.get("draft_background") or ""
+    st.session_state.new_desc_pot_impact = draft.get("draft_impact") or ""
+    st.session_state.new_collaborators = draft.get("draft_collaborators") or ""
 
 # Set up header columns
 header_col_left, header_col_mid, header_col_right = st.columns([0.1,0.8,0.1])
@@ -470,6 +481,12 @@ with tab_new:
                 """
             )
 
+            # Check if a draft form has been loaded in, and if so, populate the
+            # form with the draft
+            if "draft_to_load" in st.session_state:
+                populate_form_from_draft(st.session_state.draft_to_load)
+                del st.session_state.draft_to_load
+            
             # Initilise values to be used as widgets on the form
             new_prop_id = None
             new_name = None
@@ -556,6 +573,21 @@ with tab_new:
 
                 proposal_submitted = st.form_submit_button("Submit Proposal")
                 draft_saved = st.form_submit_button("Save as Draft")
+
+                st.write(
+                    """
+                    To load a previously saved draft, enter the draft ID number
+                    provided when you saved the draft, and click 'Load Previous
+                    Draft'
+                    """
+                )
+
+                loaded_draft_id = st.text_input(
+                    "Please input the draft ID of the draft to load",
+                    key="loaded_draft_id"
+                )
+
+                draft_loaded = st.form_submit_button("Load Previous Draft")
 
                 # Update database with new entry
                 if proposal_submitted:
@@ -707,9 +739,6 @@ with tab_new:
 
                 # Save as draft if user selects this button
                 if draft_saved:
-                    # Grab current rows in draft_forms table
-                    rows_draft = run_query_draft_forms()
-
                     while True:
                         try:
                             # Randomly generate a draft identifier
@@ -720,7 +749,7 @@ with tab_new:
                                     {
                                         "id":draft_id,
                                         "draft_name":new_name,
-                                        "draft_title":new_title,
+                                        "draft_role":new_role,
                                         "draft_org":new_org,
                                         "draft_questions":new_desc_question,
                                         "draft_background":new_desc_background,
@@ -738,6 +767,32 @@ with tab_new:
                     st.session_state.draft_submitted = True
 
                     st.rerun()
+
+                if draft_loaded:
+                    try:
+                        response_draft = (
+                            supabase.table("draft_forms")
+                            .select("*")
+                            .eq("id", loaded_draft_id)
+                            .execute()
+                        )
+
+                        if response_draft.data:
+                            row_draft = response_draft.data[0]
+
+                            st.session_state.draft_to_load = row_draft
+
+                            st.rerun()
+                        else:
+                            form_error_container.error(
+                                "No draft could be found with that draft ID"
+                            )
+                    except Exception:
+                        form_error_container.error(
+                            "Error loading draft.  Please try again."
+                        )
+
+
                         
 if st.session_state.pop("error_harvester", False):
     show_error_harvester()
