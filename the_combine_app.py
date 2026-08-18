@@ -189,18 +189,19 @@ def populate_form_from_draft(draft):
     st.session_state.new_collaborators = draft.get("draft_collaborators") or ""
 
 # Set up header columns
-header_col_left, header_col_mid, header_col_right = st.columns([0.1,0.8,0.1])
+header_col_left, header_col_mid = st.columns([0.1,0.9])
 
 # Logo section
 with header_col_left:
-    st.image("arc_logo.jpg", width="stretch")
+    st.write("") # added whitespace
+    st.image("nihr_logo.png", width="stretch")
 
     st.image("hsma_logo.png", width="stretch")
 
 # Header intro section 
 with header_col_mid:
     # Title for app
-    st.header("The Combine")
+    st.subheader("The Combine")
     st.write(
         """
         Welcome to The Combine - the hub for HSMA Lambda Project Proposals.
@@ -215,8 +216,10 @@ with header_col_mid:
     )
 
 # HL2 image section
-with header_col_right:
-    st.image("hl_2_image.png", width="stretch")
+#with header_col_right:
+#    st.write("") # added whitesapce
+#    st.write("") # added whitespace
+#    st.image("hl_2_image.png", width="stretch")
 
 # Separate app into two tabs - one for exploring existing proposals, one for
 # submitting new proposals
@@ -226,20 +229,26 @@ tab_existing, tab_new = st.tabs(
 )
 
 with tab_existing:
-    st.write(
-        """
-        Use this section to explore project proposals that have already been
-        submitted.  The section on the left is split into three tabs - use
-        these to switch between proposals that have been submitted but not yet
-        turned into HSMA projects, those that are current HSMA projects, and
-        those that have been completed as HSMA projects.\n
-        You can use the Combine Harvester to ask questions about proposals in
-        the database, and you will receive AI-powered responses.  For example,
-        you may want to ask if there are any proposals submitted from your
-        organisation, or if there are any looking at the area in which you're
-        interested.
-        """
-    )
+    col_hl2, col_exist_desc = st.columns([0.1,0.9])
+
+    with col_hl2:
+        st.image("hl_2_image.png", width="stretch")
+
+    with col_exist_desc:
+        st.write(
+            """
+            Use this section to explore project proposals that have already been
+            submitted.  The section on the left is split into three tabs - use
+            these to switch between proposals that have been submitted but not yet
+            turned into HSMA projects, those that are current HSMA projects, and
+            those that have been completed as HSMA projects.\n
+            You can use the Combine Harvester to ask questions about proposals in
+            the database, and you will receive AI-powered responses.  For example,
+            you may want to ask if there are any proposals submitted from your
+            organisation, or if there are any looking at the area in which you're
+            interested.
+            """
+        )
     # Set up main sections of the app
     col_left, col_mid = st.columns([0.5,0.5])
 
@@ -442,22 +451,28 @@ with tab_existing:
             st.rerun()
 
 with tab_new:
-    st.write(
-        """
-        Use this section to submit new project proposals.  Note - you should
-        only submit proposals if you have attended a HSMA Lambda workshop, but
-        you are free to submit as many proposals as you like.  Please provide
-        all the requested information and then submit the form.  If there are
-        any fields that are required that you have left empty, the error box
-        on the right will flag them if you try to submit.  Please correct them
-        before resubmitting.\n
-        If you'd like to return to the form later before
-        submitting it, use the "Save as Draft" button and make a note of the
-        4 digit draft number you are given - you will need this to reload the
-        draft in the future.  Note that saving the draft does NOT submit the
-        proposal.
-        """
-    )
+    col_hl2_new, col_new_desc = st.columns([0.1,0.9])
+
+    with col_hl2_new:
+        st.image("hl_2_new_image.png", width="stretch")
+
+    with col_new_desc:
+        st.write(
+            """
+            Use this section to submit new project proposals.  Note - you should
+            only submit proposals if you have attended a HSMA Lambda workshop, but
+            you are free to submit as many proposals as you like.  Please provide
+            all the requested information and then submit the form.  If there are
+            any fields that are required that you have left empty, the error box
+            on the right will flag them if you try to submit.  Please correct them
+            before resubmitting.\n
+            If you'd like to return to the form later before
+            submitting it, use the "Save as Draft" button and make a note of the
+            4 digit draft number you are given - you will need this to reload the
+            draft in the future.  Note that saving the draft does NOT submit the
+            proposal.
+            """
+        )
     # Set up main sections of the app
     col_right_f, col_right_e = st.columns([0.7,0.3])
 
