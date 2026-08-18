@@ -450,7 +450,12 @@ with tab_new:
         all the requested information and then submit the form.  If there are
         any fields that are required that you have left empty, the error box
         on the right will flag them if you try to submit.  Please correct them
-        before resubmitting.
+        before resubmitting.\n
+        If you'd like to return to the form later before
+        submitting it, use the "Save as Draft" button and make a note of the
+        4 digit draft number you are given - you will need this to reload the
+        draft in the future.  Note that saving the draft does NOT submit the
+        proposal.
         """
     )
     # Set up main sections of the app
@@ -501,20 +506,46 @@ with tab_new:
                 "new_proposal_form",
                 enter_to_submit=False
             ):
-                new_name = st.text_input(
-                    "What's your name?",
-                    key="new_name"
+                st.write(
+                    """
+                    To load a previously saved draft, enter the draft ID number
+                    provided when you saved the draft, and click 'Load Previous
+                    Draft'.  Otherwise, ignore this first field.
+                    """
                 )
 
-                new_role = st.text_input(
-                    "What's your job title?",
-                    key="new_role"
-                )
+                col_dl_input, col_dl_button = st.columns([0.2, 0.8])
+                
+                with col_dl_input:
+                    loaded_draft_id = st.text_input(
+                        "4 digit draft ID",
+                        key="loaded_draft_id"
+                    )
 
-                new_org = st.text_input(
-                    "What's your organisation?",
-                    key="new_org"
-                )
+                with col_dl_button:
+                    st.write("") # Add some whitespace to shift button down
+                    st.write("") # Add some whitespace to shift button down
+                    draft_loaded = st.form_submit_button("Load Previous Draft")
+
+                col_name, col_role, col_org = st.columns([0.33,0.33,0.34])
+                
+                with col_name:
+                    new_name = st.text_input(
+                        "What's your name?",
+                        key="new_name"
+                    )
+
+                with col_role:
+                    new_role = st.text_input(
+                        "What's your job title?",
+                        key="new_role"
+                    )
+
+                with col_org:
+                    new_org = st.text_input(
+                        "What's your organisation?",
+                        key="new_org"
+                    )
 
                 new_desc_question = st.text_area(
                     "What are the question(s) you want the project to answer? " +
@@ -571,23 +602,23 @@ with tab_new:
                     """
                 )
 
-                proposal_submitted = st.form_submit_button("Submit Proposal")
-                draft_saved = st.form_submit_button("Save as Draft")
-
-                st.write(
-                    """
-                    To load a previously saved draft, enter the draft ID number
-                    provided when you saved the draft, and click 'Load Previous
-                    Draft'
-                    """
+                col_sub_but, col_dr_sav_but, col_sav_desc = st.columns(
+                    [0.2,0.2,0.6]
                 )
 
-                loaded_draft_id = st.text_input(
-                    "Please input the draft ID of the draft to load",
-                    key="loaded_draft_id"
-                )
+                with col_sub_but:
+                    proposal_submitted = st.form_submit_button(
+                        "Submit Proposal"
+                    )
 
-                draft_loaded = st.form_submit_button("Load Previous Draft")
+                with col_dr_sav_but:
+                    draft_saved = st.form_submit_button("Save as Draft")
+
+                with col_sav_desc:
+                    st.write(
+                        "(Use the Save as Draft button to save the draft " +
+                        "and return to it later)"
+                    )
 
                 # Update database with new entry
                 if proposal_submitted:
