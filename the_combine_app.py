@@ -189,13 +189,11 @@ def populate_form_from_draft(draft):
     st.session_state.new_collaborators = draft.get("draft_collaborators") or ""
 
 # Set up header columns
-header_col_left, header_col_mid = st.columns([0.1,0.9])
+header_col_left, header_col_mid, header_col_right = st.columns([0.1,0.8,0.1])
 
 # Logo section
 with header_col_left:
     st.write("") # added whitespace
-    st.image("nihr_logo.png", width="stretch")
-
     st.image("hsma_logo.png", width="stretch")
 
 # Header intro section 
@@ -214,6 +212,11 @@ with header_col_mid:
         HSMA Lambda : https://hsma.co.uk/lambda.html
         """
     )
+
+# NIHR logo section
+with header_col_right:
+    st.write("") # added whitespace
+    st.image("nihr_logo.png", width="stretch")
 
 # HL2 image section
 #with header_col_right:
