@@ -771,6 +771,22 @@ with tab_new:
                                     ).execute()
                                 )
 
+                                # Proposal successfully submitted, so remove
+                                # draft from database if one was loaded in
+                                draft_id_to_delete = (
+                                    st.session_state.get("draft_id_to_delete")
+                                )
+
+                                if draft_id_to_delete is not None:
+                                    (
+                                        supabase.table("draft_forms")
+                                        .delete()
+                                        .eq("id", draft_id_to_delete)
+                                        .execute()
+                                    )
+
+                                    del st.session_state.draft_id_to_delete
+
                                 break
                             except:
                                 pass
@@ -826,6 +842,13 @@ with tab_new:
                         if response_draft.data:
                             row_draft = response_draft.data[0]
 
+                            # Remember which draft was loaded for deletion if
+                            # the draft gets subsequently submitted
+                            st.session_state.draft_id_to_delete = (
+                                row_draft["id"]
+                            )
+
+                            # Store the draft to populate the form
                             st.session_state.draft_to_load = row_draft
 
                             st.rerun()
