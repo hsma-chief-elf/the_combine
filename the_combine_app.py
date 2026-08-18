@@ -801,31 +801,49 @@ with tab_new:
 
                 # Save as draft if user selects this button
                 if draft_saved:
-                    while True:
-                        try:
-                            # Randomly generate a draft identifier
-                            draft_id = random.randint(1000,9999)
+                    draft_data = {
+                        "draft_name":new_name,
+                        "draft_role":new_role,
+                        "draft_org":new_org,
+                        "draft_questions":new_desc_question,
+                        "draft_background":new_desc_background,
+                        "draft_impact":new_desc_pot_impact,
+                        "draft_collaborators":new_collaborators
+                    }
 
-                            response = (
-                                supabase.table("draft_forms").insert(
-                                    {
-                                        "id":draft_id,
-                                        "draft_name":new_name,
-                                        "draft_role":new_role,
-                                        "draft_org":new_org,
-                                        "draft_questions":new_desc_question,
-                                        "draft_background":new_desc_background,
-                                        "draft_impact":new_desc_pot_impact,
-                                        "draft_collaborators":new_collaborators
-                                    }
-                                ).execute()
-                            )
+                    # Grab the draft_id in the session state (if one exists)
+                    draft_id = st.session_state.get("draft_id_to_update")
+                    
+                    # If this draft already exists update the existing draft
+                    if draft_id is not None:
+                        draft_data["id"] = draft_id
 
-                            break
-                        except:
-                            pass
+                        response = (
+                            supabase.table("draft_forms")
+                            .update(draft_data)
+                            .eq("id", draft_id)
+                            .execute()
+                        )
+                    else:
+                        # Do this if there is not an existing draft
+                        while True:
+                            try:
+                                # Randomly generate a draft identifier
+                                draft_id = random.randint(1000,9999)
+                                draft_data["id"] = draft_id
+
+                                response = (
+                                    supabase.table("draft_forms")
+                                    .insert(draft_data)
+                                    .execute()
+                                )
+
+                                break
+                            except:
+                                pass
 
                     st.session_state.dr_id = draft_id
+                    st.session_state.draft_id_to_update = draft_id
                     st.session_state.draft_submitted = True
 
                     st.rerun()
@@ -845,6 +863,11 @@ with tab_new:
                             # Remember which draft was loaded for deletion if
                             # the draft gets subsequently submitted
                             st.session_state.draft_id_to_delete = (
+                                row_draft["id"]
+                            )
+                            # Also store it separately in case the user
+                            # decides to resave the submission
+                            st.session_state.draft_id_to_update = (
                                 row_draft["id"]
                             )
 
